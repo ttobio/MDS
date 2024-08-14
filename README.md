@@ -1,4 +1,4 @@
-# GROMACS RMSD Analysis and Visualization
+# GROMACS Results Analysis and Visualization
 
 ## Overview
 
