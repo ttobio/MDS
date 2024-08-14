@@ -20,7 +20,7 @@ In the future, this repository will also include scripts for visualizing other i
 
 ## How to Use
 
-1. **Data Preparation**: Ensure your GROMACS `.xvg` files are correctly formatted. The script assumes any rows begin with # or @ as headers, which will be automatically removed.
+1. **Data Preparation**: Ensure your GROMACS `.xvg` files are correctly formatted. The script assumes any rows begin with # or @ are headers, which will be automatically removed.
 2. **Run the Script**: Execute the R script provided to load your `.xvg` files, clean the data, and generate RMSD plots.
 3. **Customization**: Modify the `ggplot2` parameters in the script to fit your specific publication needs, such as changing colors, labels, and legend placement.
 
