@@ -1,52 +1,63 @@
-read_and_clean_xvg <- function(file) {
-  # Read the file and skip lines that start with # or @ (these are headers/comments)
-  data <- read.table(file, comment.char = "@", fill = TRUE, header = FALSE)
+# Function to read CSV files, rename columns, store them in a list, and assign individual variables
+read_and_assign_rmsd_files <- function() {
+  # Get all CSV files starting with 'rmsd' in the current directory
+  rmsd_files <- list.files(pattern = "^rmsd.*\\.csv$")
   
-  # Remove rows where the first column is not numeric (typically headers/comments)
-  data <- data[!grepl("^[@#]", data$V1), ]
+  # Check if any files are found
+  if (length(rmsd_files) == 0) {
+    stop("No RMSD files found in the directory.")
+  }
   
-  # Convert columns to numeric to ensure data is clean
-  data <- data.frame(lapply(data, as.numeric))
+  # Initialize an empty list to store data frames
+  data_list <- list()
   
-  # Keep only the first two columns (time and RMSD)
-  data <- data[, 1:2]
+  # Loop through the files, read them, rename columns, and store in the list
+  for (file in rmsd_files) {
+    # Print the filename to track progress
+    message(paste("Reading file:", file))
+    
+    # Read the CSV file
+    data <- read.csv(file)
+    
+    # Rename the columns to 'Time(ns)' and 'RMSD(nm)'
+    colnames(data) <- c("Time(ns)", "RMSD(nm)")
+    
+    # Store the dataframe in the list using the file name (without .csv) as the list element name
+    data_list[[gsub(".csv", "", file)]] <- data
+    
+    # Display the first few rows of the dataframe
+    print(head(data))
+  }
   
-  # Assign column names
-  colnames(data) <- c("Time(ns)", "RMSD")
-  
-  return(data)
+  # Loop through the data_list and assign each dataframe to an individual variable
+  for (name in names(data_list)) {
+    assign(name, data_list[[name]], envir = .GlobalEnv)  # Assign to global environment
+  }
 }
-#Use the Function to Read an .xvg File and Preview the Data
-ER_rmsd <- "rmsd1.xvg"
-BIP_rmsd <- "rmsd2.xvg"
 
-# Read and clean the .xvg file
-cleaned_ER <- na.omit(read_and_clean_xvg(ER_rmsd))
-cleaned_BIP <- na.omit(read_and_clean_xvg(BIP_rmsd))
+# Call the function to read the files and create individual variables
+read_and_assign_rmsd_files()
 
-# Preview the cleaned data
-head(cleaned_ER)
-# Convert RMSD from nm to Å (1 nm = 10 Å)
-cleaned_ER$`RMSD (Å)` <- cleaned_ER$RMSD * 10
-cleaned_BIP$`RMSD (Å)` <- cleaned_BIP$RMSD * 10
-cleaned_BIP$`Time(ns)` <- cleaned_BIP$`Time(ns)` / 1000 #in case the time in pico seconds
-library(dplyr)
-
-cleaned_BIP <- cleaned_BIP %>%
-  filter(`Time(ns)` <= 50)
-# Preview the updated data frame
-head(cleaned_BIP)
+# Now you can access each dataframe as an individual variable in the environment
+# For example, you can directly access 'rmsd1', 'rmsd2', etc. like this:
+print(head(rmsd1))  # Example for rmsd1
+print(head(rmsd2))  # Example for rmsd2
 
 
 
-#===============================================================================
-library(ggplot2)
+
+
+
+
 
 p <- ggplot() +
   # Plot the first dataset with label "State 1"
-  geom_line(data = cleaned_ER, aes(x = `Time(ns)`, y = `RMSD (Å)`, color = "State 1"), size = 1) +   
+  geom_line(data = rmsd1, aes(x = `Time(ns)`, y = `RMSD(ns)`, color = "State 1"), size = 1) +   
   # Plot the second dataset with label "State 2"
-  geom_line(data = cleaned_BIP, aes(x = `Time(ns)`, y = `RMSD (Å)`, color = "State 2"), size = 1) +   
+  geom_line(data = rmsd2, aes(x = `Time(ns)`, y = `RMSD(ns)`, color = "State 2"), size = 1) +   
+  geom_line(data = rmsd3, aes(x = `Time(ns)`, y = `RMSD(ns)`, color = "State 2"), size = 1) +
+  geom_line(data = rmsd4, aes(x = `Time(ns)`, y = `RMSD(ns)`, color = "State 2"), size = 1) +
+  geom_line(data = rmsd5, aes(x = `Time(ns)`, y = `RMSD(ns)`, color = "State 2"), size = 1)
   theme_classic() +                              
   theme(
     plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),  # Title customization
@@ -70,5 +81,4 @@ p <- ggplot() +
   guides(color = guide_legend(nrow = 3, position ="inside")) 
 
 print(p)
-ggsave("rmsd.png", plot = p, width = 13, height = 10, dpi = 600)
-
+ggsave("rmsd_new.png", plot = p, width = 13, height = 10, dpi = 600)
