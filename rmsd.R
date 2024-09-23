@@ -52,8 +52,8 @@ read_and_assign_rmsd_files()
 str(data_list)
 
 
-print(head(rmsd_ca_ca_PRm71))  # Example for rmsd1
-print(head(rmsd_ca_ca_PRm49)) # Example for rmsd2
+print(head(rmsd_ca_ca_PRm71)) 
+print(head(rmsd_ca_ca_PRm49)) 
 
 print(head(rmsd_ca_ca_PRaso))
 
