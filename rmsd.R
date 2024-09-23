@@ -1,3 +1,12 @@
+#This is a script that primary visualizes the RMSD results out of ./prepare_xvg.sh
+#
+#copyright (c) 2024 - Emadeldin M. Ibrahim
+#
+#last modified Sep, 2024
+#First written Aug, 2024
+
+setwd("C:/Users/Imad/Desktop/MDS/data/XVG_PR/rmsd")
+
 # Function to read CSV files, rename columns, store them in a list, and assign individual variables
 read_and_assign_rmsd_files <- function() {
   # Get all CSV files starting with 'rmsd' in the current directory
@@ -40,45 +49,75 @@ read_and_assign_rmsd_files()
 
 # Now you can access each dataframe as an individual variable in the environment
 # For example, you can directly access 'rmsd1', 'rmsd2', etc. like this:
-print(head(rmsd1))  # Example for rmsd1
-print(head(rmsd2))  # Example for rmsd2
+str(data_list)
 
 
+print(head(rmsd_ca_ca_PRm71))  # Example for rmsd1
+print(head(rmsd_ca_ca_PRm49)) # Example for rmsd2
 
+print(head(rmsd_ca_ca_PRaso))
 
+print(head(rmsd_ca_ca_PRprog))
 
+print(head(rmsd_ca_caPR_alone))
 
-
+library(ggplot2)
 
 p <- ggplot() +
   # Plot the first dataset with label "State 1"
-  geom_line(data = rmsd1, aes(x = `Time(ns)`, y = `RMSD(ns)`, color = "State 1"), size = 1) +   
+  geom_line(data = rmsd_ca_ca_PRaso, aes(x = `Time(ns)`, y = `RMSD(nm)`, color = "ASO"), size = 1, alpha = 0.7) +   
   # Plot the second dataset with label "State 2"
-  geom_line(data = rmsd2, aes(x = `Time(ns)`, y = `RMSD(ns)`, color = "State 2"), size = 1) +   
-  geom_line(data = rmsd3, aes(x = `Time(ns)`, y = `RMSD(ns)`, color = "State 2"), size = 1) +
-  geom_line(data = rmsd4, aes(x = `Time(ns)`, y = `RMSD(ns)`, color = "State 2"), size = 1) +
-  geom_line(data = rmsd5, aes(x = `Time(ns)`, y = `RMSD(ns)`, color = "State 2"), size = 1)
+  geom_line(data = rmsd_ca_ca_PRm49, aes(x = `Time(ns)`, y = `RMSD(nm)`, color = "MA1449"), size = 1, alpha = 0.7) +
+  # Plot the third dataset with label "State 3"
+  geom_line(data = rmsd_ca_ca_PRm71, aes(x = `Time(ns)`, y = `RMSD(nm)`, color = "MA1471"), size = 1, alpha = 0.7) +
+  # Plot the fourth dataset with label "State 4"
+  geom_line(data = rmsd_ca_ca_PRprog, aes(x = `Time(ns)`, y = `RMSD(nm)`, color = "PROG"), size = 1, alpha = 0.7) +
+  # Plot the fifth dataset with label "State 5"
+  geom_line(data = rmsd_ca_caPR_alone, aes(x = `Time(ns)`, y = `RMSD(nm)`, color = "PR"), size = 1, alpha = 0.7) +
+  
+  # Adjust theme
   theme_classic() +                              
   theme(
-    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),  # Title customization
-    axis.title.x = element_text(size = 12),  # X-axis title customization
-    axis.title.y = element_text(size = 12),  # Y-axis title customization
-    axis.text.x = element_text(size = 10),    # X-axis labels customization
-    axis.text.y = element_text(size = 10),    # Y-axis labels customization
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),  # Title customization, bold and centered
+    axis.title.x = element_text(size = 12, face = "bold"),  # X-axis title bold
+    axis.title.y = element_text(size = 12, face = "bold"),  # Y-axis title bold
+    axis.text.x = element_text(size = 10, face = "bold"),    # X-axis labels bold
+    axis.text.y = element_text(size = 10, face = "bold"),    # Y-axis labels bold
     panel.grid.major = element_blank(), # Major grid lines
     panel.grid.minor = element_blank(),  # No minor grid lines
-    legend.position = "top",  # Position legend at the top
-    legend.title = element_blank()  # Remove the legend title
+    legend.position = c(0.5, 0.85),  # Position legend inside the plot area
+    legend.justification = c(0.5, 0.5),  # Center the legend
+    legend.title = element_blank(),  # Remove the legend title
+    legend.text = element_text(size= 10, face = "bold") # Make legend labels bold
   ) +
+  
+  # Labels for title and axes
   labs(
     title = "RMSD Plot",
     x = "Time (ns)",
-    y = "RMSD (Å)"
+    y = "RMSD (nm)"
   ) +
+  
+  # Set X-axis and Y-axis scales
   scale_x_continuous(expand = c(0, 0)) + # Remove extra space at the ends
-  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 18, by = 2)) +  # Y-axis breaks
-  scale_color_manual(values = c("State 1" = "red", "State 2" = "black")) +  
-  guides(color = guide_legend(nrow = 3, position ="inside")) 
+  
+  # Force the Y-axis to range from 0 to 1 with breaks every 0.2
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 0.8, by = 0.2), limits = c(0, 0.8)) + 
+  
+  # Manual color assignment with transparency for better readability
+  scale_color_manual(values = c(
+    "ASO" = "steelblue",  # Blue shade
+    "MA1449" = "tomato",     # Red shade
+    "MA1471" = "darkorange", # Orange shade
+    "PROG" = "forestgreen",# Green shade
+    "PR" = "purple"      # Purple shade
+  )) +  
+  
+  # Adjust the number of rows in the legend to stack them vertically
+  guides(color = guide_legend(nrow = 5, byrow = TRUE))  # Stacks legend vertically, one item per row
 
 print(p)
-ggsave("rmsd_new.png", plot = p, width = 13, height = 10, dpi = 600)
+
+
+#outputs>>("/output_plots")
+ggsave("rmsd_PR.png", plot = p, width = 10, height = 10, dpi = 600)
