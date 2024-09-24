@@ -1,4 +1,4 @@
-#This is a script that primary visualizes the RMSD results out of ./prepare_xvg.sh
+#This is a script that primary visualizes the RoG results out of ./prepare_RoG.sh
 #
 #copyright (c) 2024 - Emadeldin M. Ibrahim
 #
