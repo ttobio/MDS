@@ -63,9 +63,118 @@ print(head(rmsf_PRalone))
 
 library(ggplot2)
 
+library(ggplot2)
+library(dplyr)
+
+gyrate_combined <- bind_rows(
+  mutate(rmsf_PRaso, State = "ASO"),
+  mutate(rmsf_PRm49, State = "MA1449"),
+  mutate(rmsf_PRm71, State = "MA1471"),
+  mutate(rmsf_PRprog, State = "PROG"),
+  mutate(rmsf_PRalone, State = "PR")
+)
+
+# Combined Plot (same as before)
+p_combined <- ggplot() +
+  geom_line(data = gyrate_combined, aes(x = `Residue`, y = `RMSF(nm)`, color = State), size = 1, alpha = 0.7) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.position = c(0.5, 0.85),
+    legend.justification = c(0.5, 0.5),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 10, face = "bold")
+  ) +
+  labs(
+    title = "RMSF Plot",
+    x = "Residue",
+    y = "RMSF (nm)"
+  ) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 0.8, by = 0.2), limits = c(0, 0.8)) +
+  scale_color_manual(values = c(
+    "ASO" = "steelblue",
+    "MA1449" = "tomato",
+    "MA1471" = "darkorange",
+    "PROG" = "forestgreen",
+    "PR" = "purple"
+  )) +
+  guides(color = guide_legend(nrow = 5, byrow = TRUE))
+
+print(p_combined)
+#ggsave("rmsf_combined.png", plot = p_combined, width = 10, height = 10, dpi = 600)
+
+# Split Plot with Separate Panels (using facet_wrap)
+p_split <- ggplot(gyrate_combined, aes(x = `Residue`, y = `RMSF(nm)`)) +
+  geom_line(aes(color = State), size = 1, alpha = 0.7) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    axis.title.x = element_text(size = 12, face = "bold"),
+    axis.title.y = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(size = 10, face = "bold"),
+    axis.text.y = element_text(size = 10, face = "bold"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.position = "none"  # Remove the legend for the split plot
+  ) +
+  labs(
+    title = "RMSF Plot",
+    x = "Residue",
+    y = "RMSF (nm)"
+  ) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0), breaks = seq(0, 0.8, by = 0.1), limits = c(0, 0.8)) +
+  scale_color_manual(values = c(
+    "ASO" = "steelblue",
+    "MA1449" = "tomato",
+    "MA1471" = "darkorange",
+    "PROG" = "forestgreen",
+    "PR" = "purple"
+  )) +
+  facet_wrap(~ State, ncol = 1)  # Create separate panels for each State
+
+print(p_split)
+ggsave("rmsf_split.png", plot = p_split, width = 10, height = 10, dpi = 600)
 
 
-
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  p <- ggplot() +
   # Plot the first dataset with label "State 1"
   geom_line(data = rmsf_PRaso, aes(x = `Residue`, y = `RMSF(nm)`, color = "ASO"), size = 1, alpha = 0.7) +   
